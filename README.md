@@ -1,6 +1,6 @@
 # GERENCIA PEDIDO
 
-Projeto para estudos das principais tecnologias do ecossistema Java e Spring, focado em exemplos práticos e didáticos para gerenciar pedidos.
+Projeto para estudos das principais tecnologias do ecossistema Java e Spring, focado em exemplos práticos e didáticos.
 
 ## Visão geral
 
