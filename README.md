@@ -338,12 +338,3 @@ Para dúvidas ou sugestões, abra uma issue no repositório ou envie um e-mail a
 
 Este projeto pode ser usado para estudos e demonstrações. Adicione uma licença formal ao repositório conforme sua necessidade (por exemplo, MIT, Apache-2.0, etc.).
 
-
-## Get started
-
-- git init.  
-- git add README.md.  
-- git commit -m "first commit".  
-- git branch -M main.  
-- git remote add origin https://github.com/window-vrs/gerenciar-pedido-backend.git.  
-- git push -u origin main.  
