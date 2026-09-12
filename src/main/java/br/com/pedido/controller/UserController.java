@@ -30,20 +30,20 @@ public class UserController implements GenericController {
 	private final UserService service;
 
 	@GetMapping("/recuperar/{id}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN')")
 	public ResponseEntity<UserResponseDTO> recuperar(@PathVariable Integer id){
 		return service.recuperar(id);
 	}
 	
 	
 	@GetMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('GESTOR')")
 	public ResponseEntity<List<UserResponseDTO>> listar(){
 		return service.listar();
 	}
 
 	@GetMapping("pesquisar")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN')")
 	public ResponseEntity<List<UserResponseDTO>> pesquisar(
 			@RequestParam(required = false) String userName,
 			@RequestParam(required = false) Boolean status){
@@ -51,8 +51,8 @@ public class UserController implements GenericController {
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
-	public ResponseEntity<Object> salvar(@RequestBody @Validated UserDTO user){
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN')")
+	public ResponseEntity<Object> registrar(@RequestBody @Validated UserDTO user){
 		
 		ResponseEntity<?> salvar = service.salvar(user);
 		
@@ -61,14 +61,14 @@ public class UserController implements GenericController {
 	
 	
 	@PatchMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN')")
 	public ResponseEntity<Object> atualizar(@RequestBody @Validated UserDTO user){ 
 		return service.atualizar(user);
 	}
 	
 	@DeleteMapping("{id}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
-	public ResponseEntity<Void> deletar(@PathVariable("id") Integer id){ 
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN')")
+	public ResponseEntity<Void> deletar(@PathVariable Integer id){ 
 		return service.deletar(id);
 	}
 	

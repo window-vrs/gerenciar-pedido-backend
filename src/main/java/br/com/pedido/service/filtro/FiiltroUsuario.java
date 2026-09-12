@@ -11,7 +11,7 @@ public class FiiltroUsuario {
 
 	public Example<User> pesquisar(String userName, Boolean status) {
 		var userParam = new User();
-		userParam.setUserName(userName);
+		userParam.setUsername(userName);
 		userParam.setStatus(status);
 		
 		ExampleMatcher matching = ExampleMatcher.matching();

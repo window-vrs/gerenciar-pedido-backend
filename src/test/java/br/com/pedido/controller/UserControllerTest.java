@@ -15,17 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import br.com.pedido.config.SecurityConfiguration;
+import br.com.pedido.config.seguranca.SecurityConfiguration;
 import br.com.pedido.controller.request.dto.UserDTO;
 import br.com.pedido.controller.response.dto.UserResponseDTO;
 import br.com.pedido.repository.RoleRepository;
 import br.com.pedido.repository.UserRepository;
+import br.com.pedido.service.TokenService;
 import br.com.pedido.service.UserService;
 import br.com.pedido.service.filtro.FiiltroUsuario;
 import br.com.pedido.util.CustomizationBeanUtils;
@@ -36,9 +38,6 @@ import tools.jackson.databind.ObjectMapper;
 @Slf4j
 public class UserControllerTest {
 
-	//private final ApplicationContext context;
-	
-	
 	@Autowired
 	private MockMvc mvc;
 	
@@ -59,6 +58,11 @@ public class UserControllerTest {
 	private PasswordEncoder passwordEncoder;
 	@MockitoBean
 	private FiiltroUsuario exempleUsuario;
+
+	@MockitoBean
+	private AuthenticationManager autenticationManager;
+	@MockitoBean
+	private TokenService tokenService;
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	
@@ -78,7 +82,7 @@ public class UserControllerTest {
 		
 		result.andDo(print())
 		.andExpect(jsonPath("$.id").value(1))
-		.andExpect(jsonPath("$.userName").value("maria.silva"));
+		.andExpect(jsonPath("$.username").value("maria.silva"));
 	}
 
 
@@ -95,7 +99,7 @@ public class UserControllerTest {
 		
 		result.andDo(print())
 		   .andExpect(jsonPath("$[0].id").value(1))
-		   .andExpect(jsonPath("$[0].userName").value("maria.silva"));
+		   .andExpect(jsonPath("$[0].username").value("maria.silva"));
 	}
 
 
@@ -112,7 +116,7 @@ public class UserControllerTest {
 		result.andDo(print())
 		   .andExpect(status().isOk())
 		   .andExpect(jsonPath("$[0].id").value(1))
-		   .andExpect(jsonPath("$[0].userName").value("maria.silva"));
+		   .andExpect(jsonPath("$[0].username").value("maria.silva"));
 		
 	}
 
@@ -120,7 +124,7 @@ public class UserControllerTest {
 	private UserResponseDTO createUserDTOResponse() {
 		UserResponseDTO userResponseDTO = new UserResponseDTO();
 		userResponseDTO.setId(1);
-		userResponseDTO.setUserName("maria.silva");
+		userResponseDTO.setUsername("maria.silva");
 		userResponseDTO.setStatus(true);
 		return userResponseDTO;
 	}
@@ -128,7 +132,7 @@ public class UserControllerTest {
 	private UserDTO createUserDTORequest() {
 		UserDTO userRequestDTO = new UserDTO();
 		userRequestDTO.setId(1);
-		userRequestDTO.setUserName("maria.silva");
+		userRequestDTO.setUsername("maria.silva");
 		userRequestDTO.setStatus(true);
 		userRequestDTO.setPassword("123456");
 		return userRequestDTO;

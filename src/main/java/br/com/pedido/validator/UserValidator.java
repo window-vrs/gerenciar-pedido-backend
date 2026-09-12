@@ -16,13 +16,13 @@ public class UserValidator {
 
 	public void existeUsuario(UserDTO user) {
 		if(existeUser(user)) {
-			throw new RegistroDuplicadoExcepton("Usuario já castrado com o mesmo nome de usuário: " + user.getUserName());
+			throw new RegistroDuplicadoExcepton("Usuario já castrado com o mesmo nome de usuário: " + user.getUsername());
 		}
 		
 	}
 
 	private boolean existeUser(UserDTO user) {
-		return repository.existsByUserName(user.getUserName());
+		return repository.existsByUsername(user.getUsername());
 	}
 
 	public void validarUpdate(UserDTO userDTO) {

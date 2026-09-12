@@ -11,18 +11,18 @@ import br.com.pedido.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-	@Query("SELECT u FROM User u WHERE u.userName = :userName")
-	List<User> listByUserName(String userName);
+	@Query("SELECT u FROM User u WHERE u.username = :userName")
+	List<User> listByUsername(String userName);
 
 	List<User> findBystatus(Boolean status);
 
-	//@Query("SELECT u FROM User u WHERE u.userName = :userName")
-	boolean existsByUserName(String userName);
+	//@Query("SELECT u FROM User u WHERE u.username = :userName")
+	boolean existsByUsername(String username);
 
 	@EntityGraph(attributePaths = {"roles"})
-	User findByUserName(String userName);
+	User findByUsername(String username);
 
-	Optional<User> findByUserNameAndPassword(String userName, String password);
+	Optional<User> findByUsernameAndPassword(String username, String password);
 	
 	
 

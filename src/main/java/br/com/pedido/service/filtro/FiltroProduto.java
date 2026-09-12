@@ -25,7 +25,6 @@ public class FiltroProduto {
 		        cb.equal( cb.function("YEAR", Integer.class, root.get("dataCadastro")), ano);
 	}
 
-	//TODO: VERIFICAR SE FUNCIONA CORRETAMENTE, POIS NÃO ESTÁ DANDO ERRO
 	public Specification<Produto> anoAtualizacao(Integer ano) {
 		return (root, query, cb) -> 
 		

@@ -10,11 +10,11 @@ import br.com.pedido.controller.request.dto.RolesUserDTO;
 import lombok.Data;
 
 @Data
-@JsonPropertyOrder({ "id", "userName", "password", "dataCadastro", "status" })
+@JsonPropertyOrder({ "id", "username", "password", "dataCadastro", "status" })
 public class UserResponseDTO {
 	
 	private Integer id;
-	private String userName;
+	private String username;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dataCadastro;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

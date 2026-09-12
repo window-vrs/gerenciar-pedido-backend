@@ -29,19 +29,19 @@ public class ProdutoController implements GenericController {
 	private final ProdutoService service;
 
 	@GetMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('ASSISTENTE')")
 	public ResponseEntity<List<ProdutoResponseDTO>> listar(){
 		return service.listar();
 	}
 
 	@GetMapping("/recuperar/{id}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('ASSISTENTE')")
 	public ResponseEntity<ProdutoResponseDTO> recuperar(@PathVariable Integer id){
 		return service.recuperar(id);
 	}
 
 	@GetMapping("pesquisar")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('ASSISTENTE')")
 	public ResponseEntity<List<ProdutoResponseDTO>> pesquisar(
 			@RequestParam(required = false) String nomeProduto,
 			@RequestParam(required = false) Boolean status,
@@ -53,21 +53,21 @@ public class ProdutoController implements GenericController {
 	}
 
 	@GetMapping("pesquisa-paginada")
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER', 'ASISTENTE')")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('ASSISTENTE')")
 	public ResponseEntity<Page<ProdutoResponseDTO>> pesquisaPaginada(
-			@RequestParam(value = "nomeProduto", required = false) String nomeProduto,
-			@RequestParam(value = "status", required = false) Boolean status,
-			@RequestParam(value = "descricao", required = false) String descricao,
-			@RequestParam(value = "anoCadastro", required = false) Integer anoCadastro,
-			@RequestParam(value = "anoAtualizacao", required = false) Integer anoAtualizacao,
-			@RequestParam(value = "pagina", required = false, defaultValue = "0") Integer pagina,
-			@RequestParam(value = "tamanhoPagina", required = false, defaultValue = "10") Integer tamanhoPagina){
+			@RequestParam(required = false) String nomeProduto,
+			@RequestParam(required = false) Boolean status,
+			@RequestParam(required = false) String descricao,
+			@RequestParam(required = false) Integer anoCadastro,
+			@RequestParam(required = false) Integer anoAtualizacao,
+			@RequestParam(required = false, defaultValue = "0") Integer pagina,
+			@RequestParam(required = false, defaultValue = "10") Integer tamanhoPagina){
 		return service.pesquisaPaginada(nomeProduto, status, descricao, anoCadastro, anoAtualizacao, tamanhoPagina, pagina);
 		
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
+	@PreAuthorize("hasAnyRole('GESTOR')")
 	public ResponseEntity<Object> salvar(@RequestBody @Validated ProdutoDTO Produto){ 
 		ResponseEntity<?> salvar = service.salvar(Produto);
 		return ResponseEntity.created(salvar.getHeaders().getLocation()).body(salvar.getBody());
@@ -82,7 +82,7 @@ public class ProdutoController implements GenericController {
 	
 	@DeleteMapping("{id}")
 	@PreAuthorize("hasRole('GESTOR')")
-	public ResponseEntity<Void> deletar(@PathVariable("id") Integer id){ 
+	public ResponseEntity<Void> deletar(@PathVariable Integer id){ 
 		return service.deletar(id);
 	}
 	

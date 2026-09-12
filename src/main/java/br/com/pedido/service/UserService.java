@@ -8,6 +8,9 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService  implements UserDetailsService{
 
 	private final UserRepository repository;
 	private final RoleRepository roleRepository;
@@ -134,7 +137,7 @@ public class UserService {
 		List<User> all = new ArrayList<>(); 
 		
 		if(StringUtils.isNotBlank(userName)) {
-			all = repository.listByUserName(userName);
+			all = repository.listByUsername(userName);
 		}else if(status != null) {
 			all = repository.findBystatus(status);
 		}else {
@@ -161,19 +164,25 @@ public class UserService {
 
 
 	public User findByUserName(String username) {
-		return repository.findByUserName(username);
+		return repository.findByUsername(username);
 	}
 
 
 	public ResponseEntity<UserResponseDTO> autenticar(AutenticacaoDTO autenticacaoDTO) {
 		
-		 Optional<User> user = repository.findByUserNameAndPassword(autenticacaoDTO.getUserName(), autenticacaoDTO.getPassword());
+		 Optional<User> user = repository.findByUsernameAndPassword(autenticacaoDTO.getUsername(), autenticacaoDTO.getPassword());
 		 if(user.isEmpty()) {
 			 throw new RegistroNotFoundExcepton("Usuário não encontrado");
 		 }
 		
 		
 		return ResponseEntity.ok(converteEntityResponseToDTO(user.get()));
+	}
+
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return repository.findByUsername(username);
 	}
 
 

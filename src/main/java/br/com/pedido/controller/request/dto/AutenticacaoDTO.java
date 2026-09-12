@@ -10,7 +10,7 @@ public class AutenticacaoDTO {
 
 	@NotBlank(message = "O campo username não pode ser nulo")
 	@Size(min = 3, max = 20, message = "O campo username deve ter entre 3 e 20 caracteres")
-	private String userName;
+	private String username;
 	
 	@NotNull(message = "O campo password não pode ser nulo")
 	@Size(min = 6, max = 60, message = "O campo password deve ter entre 6 e 20 caracteres")

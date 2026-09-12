@@ -1,11 +1,15 @@
 package br.com.pedido.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -27,15 +31,20 @@ import lombok.Data;
 @Table(name = "TB_USER")
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class User implements UserDetails {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2642039280063196901L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @Column(name = "USERNAME", length = 20)
-    private String userName;
+    private String username;
 
     @Column(name = "STR_OBSERVACAO", length = 200)
     private String observacao;
@@ -76,5 +85,24 @@ public class User {
     protected void onUpdate() {
         atualizacao = LocalDateTime.now();
     }
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		Set<GrantedAuthority> rolesauto = new HashSet<GrantedAuthority>();
+		if (!roles.isEmpty()) {
+			for (Role role : roles) {
+				rolesauto.add(new SimpleGrantedAuthority(role.getNome()));
+			}
+		}
+		
+		return rolesauto;
+	}
+
+	@Override
+	public String getUsername() {
+		return username;
+	}
+
 
 }

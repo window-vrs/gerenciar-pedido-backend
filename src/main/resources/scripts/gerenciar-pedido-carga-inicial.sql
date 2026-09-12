@@ -19,9 +19,9 @@ INSERT INTO TB_USER (
     PASSWORD,
     STATUS
 ) VALUES
-('joao.silva', '$2a$10$BTXO8bI04PneRqZgtJQ3feUKthMgyaTGCrqojbqo6iFk.y94.oP9C', TRUE),
-('maria.souza', '$2a$10$BTXO8bI04PneRqZgtJQ3feUKthMgyaTGCrqojbqo6iFk.y94.oP9C', TRUE),
-('carlos.lima', '$2a$10$BTXO8bI04PneRqZgtJQ3feUKthMgyaTGCrqojbqo6iFk.y94.oP9C', TRUE);
+('joao.silva', '$2a$10$SQBH8V2YkxznbbXVLMHl2.Y5DCE1PN4600n6ec7Y8TeaeEPpYiZkO', TRUE),
+('maria.souza', '$2a$10$SQBH8V2YkxznbbXVLMHl2.Y5DCE1PN4600n6ec7Y8TeaeEPpYiZkO', TRUE),
+('carlos.lima', '$2a$10$SQBH8V2YkxznbbXVLMHl2.Y5DCE1PN4600n6ec7Y8TeaeEPpYiZkO', TRUE);
 
 
 /*==============================================================*/

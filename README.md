@@ -1,43 +1,45 @@
-# GERENCIA PEDIDO
+# Gerenciar Pedido
 
-Projeto para estudos das principais tecnologias do ecossistema Java e Spring, focado em exemplos práticos e didáticos para gerenciar pedidos.
+README completo do projeto "gerenciar-pedido" — aplicação backend de exemplo construída com Java e Spring Boot para gerenciar usuários e produtos, com autenticação JWT, controle por roles e tratamento centralizado de erros.
 
 ## Visão geral
 
-Este projeto é uma aplicação backend desenvolvida com Java 21 e Spring Boot. Ele reúne módulos e conceitos essenciais para aprendizado: Spring Data (JPA), Spring Security, validação, mapeamento de DTOs e boas práticas de projeto.
+O objetivo deste projeto é demonstrar as principais práticas do ecossistema Java/Spring em uma aplicação backend simples e didática:
 
-Tecnologias principais:
+- Spring Boot (Java 21)
+- Spring Data JPA para persistência
+- Spring Security para autenticação e autorização (JWT)
+- Validação de payloads e tratamento global de exceções
+- DTOs para entrada/saída e mapeamento de entidades
+- Paginação e filtros para endpoints de consulta
+- Integração com SpringDoc/OpenAPI (Swagger)
 
-- Java 21
-- Maven (wrapper incluído)
-- Spring Boot
-- Spring Data JPA
-- Spring Security
-- Lombok
-- ModelMapper
-- SpringDoc (OpenAPI/Swagger)
+## Destaques / Novas implementações
+
+- Autenticação baseada em JWT (JSON Web Token)
+  - `TokenService` gera e valida tokens assinados com HMAC. O segredo é configurável via propriedade `api.security.jwt.secret`.
+  - Tokens possuem tempo de expiração (padrão: 15 minutos).
+- Filtro de segurança (`SecurityFiler`)
+  - Intercepta requisições, recupera token do header `Authorization: Bearer <TOKEN>`, valida e popula o `SecurityContext` com as authorities do usuário.
+- Controle por roles/authorities
+  - Endpoints protegidos com `@PreAuthorize` (ex.: `hasRole('GESTOR')`, `hasAuthority('ADMIN')`). Veja os controllers em `src/main/java/br/com/pedido/controller`.
+- Tratamento global de exceções
+  - `GlobalExceptionHandler` padroniza respostas de erro (validação, autenticação, autorização, token expirado, integridade de dados, registros não encontrados).
+- Filtros e paginação
+  - Endpoints de pesquisa permitem filtros opcionais e paginação (`Page<T>`).
 
 ## Requisitos
-
-Antes de executar o projeto, certifique-se de ter instalado:
 
 - Java 21 (JDK)
 - MySQL (ou outro banco compatível) para desenvolvimento local
 - Git (opcional)
-- Conexão de internet para baixar dependências Maven
+- Conexão com a internet para baixar dependências Maven
 
-Observação: o projeto já inclui o Maven Wrapper (`mvnw` / `mvnw.cmd`), então você não precisa ter Maven globalmente instalado.
+Observação: o projeto inclui o Maven Wrapper (`mvnw` / `mvnw.cmd`).
 
-## Estrutura do projeto
+## Configuração
 
-- `src/main/java` - código fonte Java
-- `src/main/resources` - recursos (application.properties, scripts SQL)
-- `src/main/resources/scripts` - scripts SQL para criar/ popular esquema inicial
-- `pom.xml` - configuração do Maven e dependências
-
-## Configuração do banco de dados
-
-No arquivo `src/main/resources/application.properties` (ou `application.yml`) configure as propriedades de conexão com o banco. Exemplo mínimo para MySQL:
+Edite o arquivo `src/main/resources/application.properties` com suas configurações. Exemplo mínimo:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/gerencia_pedido?useSSL=false&serverTimezone=UTC
@@ -48,20 +50,29 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
+# Porta da aplicação
 server.port=8080
+
+# Segredo JWT (NUNCA COMITE SECRETS EM REPOSITÓRIO)
+api.security.jwt.secret=troque-por-um-segredo-tenebroso
 ```
 
-Se preferir, execute os scripts SQL localizados em `src/main/resources/scripts` para criar o esquema e dados iniciais.
+Dica: prefira usar variáveis de ambiente ou mecanismos de secret management para `api.security.jwt.secret` em ambientes reais.
 
 ## Como executar
-
-A seguir há comandos para executar e empacotar a aplicação. Use o Maven Wrapper fornecido no projeto.
 
 No Windows (cmd):
 
 ```cmd
+cd path\to\gerenciar-pedido
 mvnw.cmd clean package -DskipTests
 mvnw.cmd spring-boot:run
+```
+
+Ou execute o JAR gerado:
+
+```cmd
+java -jar target\gerenciar-pedido-0.0.1-SNAPSHOT.jar
 ```
 
 No Unix / macOS:
@@ -71,270 +82,129 @@ No Unix / macOS:
 ./mvnw spring-boot:run
 ```
 
-Após o package você também pode executar o JAR gerado:
+## Documentação da API (Swagger / OpenAPI)
 
-```cmd
-java -jar target\gerenciar-pedido-0.0.1-SNAPSHOT.jar
-```
+Com a aplicação em execução, a interface Swagger estará disponível em:
 
-Observação: ajuste o nome do JAR caso a versão seja diferente.
+- http://localhost:8080/gerenciar-pedido/api/v1/swagger-ui/index.html
+- ou http://localhost:8080/gerenciar-pedido/api/v1/swagger-ui/index.html
 
-## Endpoints e documentação da API
+## Autenticação (JWT)
 
-O projeto inclui integração com SpringDoc OpenAPI. Após subir a aplicação, acesse a interface Swagger em:
-
-- http://localhost:8080/swagger-ui.html
-
-ou
-
-- http://localhost:8080/swagger-ui/index.html
-
-(Se a URL padrão estiver diferente, verifique as configurações do SpringDoc ou `application.properties`.)
-
-## Exemplos de endpoints
-
-A seguir há exemplos de endpoints e exemplos de requisições baseados nos controllers do projeto.
-
-Base URL: http://localhost:8080
-
-1) Autenticação
+Endpoint de autenticação:
 
 - POST /autenticacao
+  - Recebe credenciais (username/password) e retorna um token JWT no corpo da resposta.
 
-Request JSON:
+Formato do request (exemplo):
 
 ```json
 {
-  "userName": "usuario",
+  "username": "usuario",
   "password": "senha123"
 }
 ```
 
-cURL:
-
-```bash
-curl -X POST "http://localhost:8080/autenticacao" -H "Content-Type: application/json" -d "{\"userName\": \"usuario\", \"password\": \"senha123\"}"
-```
-
-Resposta (exemplo): 200 OK
+Resposta (exemplo):
 
 ```json
 {
-  "id": 1,
-  "userName": "usuario",
-  "status": true,
-  "roles": [
-    { "id": 2, "nome": "USER", "descricao": "Usuário padrão" }
+  "token": "eyJhbGciOiJI..."
+}
+```
+
+Uso do token nos endpoints protegidos:
+
+- Adicione o header HTTP `Authorization: Bearer <TOKEN>` nas requisições.
+
+Observações:
+- Tokens expiram (padrão 15 minutos). Se o token expirar, a API retorna HTTP 401 com mensagem apropriada.
+- O filtro `SecurityFiler` valida e popula o contexto de segurança automaticamente.
+
+## Endpoints principais (resumo)
+
+Base URL: http://localhost:8080
+
+Autenticação
+- POST /autenticacao
+
+Usuários (`UserController`)
+- GET /user — lista todos (requer autenticação e permissões conforme `@PreAuthorize`)
+- GET /user/recuperar/{id} — recupera por id
+- GET /user/pesquisar?userName=...&status=... — pesquisa por filtros
+- POST /user — cria usuário
+- PATCH /user — atualiza usuário (envie `id` no payload)
+- DELETE /user/{id} — remove usuário
+
+Produtos (`ProdutoController`)
+- GET /produto — lista todos
+- GET /produto/recuperar/{id} — recupera por id
+- GET /produto/pesquisar?nomeProduto=...&status=...&descricao=... — pesquisa por filtros
+- GET /produto/pesquisa-paginada?nomeProduto=...&pagina=0&tamanhoPagina=10 — pesquisa paginada
+- POST /produto — cria produto (requer role `GESTOR`)
+- PATCH /produto — atualiza produto (requer role `GESTOR`)
+- DELETE /produto/{id} — exclui produto (requer role `GESTOR`)
+
+Consulte os controllers em `src/main/java/br/com/pedido/controller` para as regras de autorização aplicadas em cada rota.
+
+## Formato de erros
+
+Erros padronizados são retornados com o modelo `ErroResposta`:
+
+```json
+{
+  "status": 422,
+  "mensagem": "Erro de validação",
+  "erros": [
+    { "campo": "nome", "mensagem": "Nome é obrigatório" }
   ]
 }
 ```
 
-2) Usuários
+Códigos de status comuns retornados pelo `GlobalExceptionHandler`:
+- 400 Bad Request — conflitos e erros genéricos
+- 401 Unauthorized — login inválido, token inválido/expirado
+- 403 Forbidden — acesso negado (sem permissão)
+- 422 Unprocessable Content — erros de validação ou registro não encontrado
+- 500 Internal Server Error — erros não tratados
 
-- GET /user
-  - Lista todos os usuários
+## Exemplos de uso (cURL)
 
-cURL:
-
-```bash
-curl -X GET "http://localhost:8080/user" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
-```
-
-- GET /user/recuperar/{id}
-  - Recupera um usuário por ID
-
-cURL:
+1) Autenticar e obter token
 
 ```bash
-curl -X GET "http://localhost:8080/user/recuperar/1" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
+curl -X POST "http://localhost:8080/autenticacao" -H "Content-Type: application/json" -d '{"username":"admin","password":"admin123"}'
 ```
 
-- GET /user/pesquisar?userName=joao&status=true
-  - Pesquisa por filtros (userName, status)
-
-cURL:
+2) Consumir endpoint protegido
 
 ```bash
-curl -X GET "http://localhost:8080/user/pesquisar?userName=joao&status=true" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
+curl -X GET "http://localhost:8080/produto" -H "Accept: application/json" -H "Authorization: Bearer eyJhbGciOiJI..."
 ```
 
-- POST /user
-  - Cria um novo usuário
-
-Request JSON:
-
-```json
-{
-  "userName": "novoUsuario",
-  "password": "senhaSegura",
-  "observacao": "Usuário criado para testes",
-  "status": true,
-  "roles": [ { "id": 2 } ]
-}
-```
-
-cURL:
+3) Criar produto (requer role `GESTOR`)
 
 ```bash
-curl -X POST "http://localhost:8080/user" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -d "{\"userName\":\"novoUsuario\",\"password\":\"senhaSegura\",\"observacao\":\"Usuário criado para testes\",\"status\":true,\"roles\":[{\"id\":2}]}"
-```
-
-- PATCH /user
-  - Atualiza um usuário (envie `id` no payload)
-
-Request JSON:
-
-```json
-{
-  "id": 1,
-  "userName": "usuarioAtualizado",
-  "password": "novaSenha123",
-  "observacao": "Atualizado",
-  "status": true,
-  "roles": [ { "id": 2 } ]
-}
-```
-
-cURL:
-
-```bash
-curl -X PATCH "http://localhost:8080/user" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -d "{\"id\":1,\"userName\":\"usuarioAtualizado\",\"password\":\"novaSenha123\",\"observacao\":\"Atualizado\",\"status\":true,\"roles\":[{\"id\":2}]}"
-```
-
-- DELETE /user/{id}
-  - Remove um usuário
-
-cURL:
-
-```bash
-curl -X DELETE "http://localhost:8080/user/1" -H "Authorization: Bearer <TOKEN>"
-```
-
-3) Produtos
-
-- GET /produto
-  - Lista todos os produtos
-
-cURL:
-
-```bash
-curl -X GET "http://localhost:8080/produto" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
-```
-
-- GET /produto/recuperar/{id}
-  - Recupera um produto por ID
-
-cURL:
-
-```bash
-curl -X GET "http://localhost:8080/produto/recuperar/1" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
-```
-
-- GET /produto/pesquisar?nomeProduto=Caneta&status=true&descricao=azul
-  - Pesquisa por filtros
-
-cURL:
-
-```bash
-curl -X GET "http://localhost:8080/produto/pesquisar?nomeProduto=Caneta&status=true&descricao=azul" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
-```
-
-- GET /produto/pesquisa-paginada?nomeProduto=Caneta&pagina=0&tamanhoPagina=10
-  - Pesquisa paginada
-
-cURL:
-
-```bash
-curl -X GET "http://localhost:8080/produto/pesquisa-paginada?nomeProduto=Caneta&pagina=0&tamanhoPagina=10" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN>"
-```
-
-- POST /produto
-  - Cria um novo produto
-
-Request JSON:
-
-```json
-{
-  "nome": "Caneta Azul",
-  "descricao": "Caneta esferográfica azul",
-  "preco": 2.5,
-  "estoque": 150,
-  "codigoBarras": "7891234567890",
-  "status": true,
-  "categoria": { "id": 1 }
-}
-```
-
-cURL:
-
-```bash
-curl -X POST "http://localhost:8080/produto" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -d "{\"nome\":\"Caneta Azul\",\"descricao\":\"Caneta esferográfica azul\",\"preco\":2.5,\"estoque\":150,\"codigoBarras\":\"7891234567890\",\"status\":true,\"categoria\":{\"id\":1}}"
-```
-
-- PATCH /produto
-  - Atualiza um produto (envie `id` no payload)
-
-Request JSON:
-
-```json
-{
-  "id": 1,
-  "nome": "Caneta Azul Premium",
-  "descricao": "Caneta esferográfica azul - versão premium",
-  "preco": 3.75,
-  "estoque": 120,
-  "codigoBarras": "7891234567890",
-  "status": true,
-  "categoria": { "id": 1 }
-}
-```
-
-cURL:
-
-```bash
-curl -X PATCH "http://localhost:8080/produto" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -d "{\"id\":1,\"nome\":\"Caneta Azul Premium\",\"descricao\":\"Caneta esferográfica azul - versão premium\",\"preco\":3.75,\"estoque\":120,\"codigoBarras\":\"7891234567890\",\"status\":true,\"categoria\":{\"id\":1}}"
-```
-
-- DELETE /produto/{id}
-  - Remove um produto
-
-cURL:
-
-```bash
-curl -X DELETE "http://localhost:8080/produto/1" -H "Authorization: Bearer <TOKEN>"
+curl -X POST "http://localhost:8080/produto" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -d '{"nome":"Caneta Azul","descricao":"Caneta esferográfica azul","preco":2.5,"estoque":150,"codigoBarras":"7891234567890","status":true,"categoria":{"id":1}}'
 ```
 
 ## Testes
 
-Para executar os testes unitários e de integração:
+Execute a suíte de testes com Maven Wrapper:
 
 ```cmd
 mvnw.cmd test
 ```
 
-## Observações sobre desenvolvimento
+Os relatórios de testes são gerados em `target/surefire-reports`.
 
-- Lombok: o projeto usa Lombok para reduzir boilerplate. Instale o plugin Lombok na sua IDE e habilite o suporte a anotações para evitar erros de compilação/IDE.
-- Perfil de execução: para perfis específicos (dev, prod), use `-Dspring.profiles.active=dev` ou configure variáveis de ambiente conforme necessário.
+## Boas práticas
 
-## Boas práticas sugeridas
+- Não versionar segredos (usar variáveis de ambiente ou secret manager).
+- Habilite o plugin do Lombok na sua IDE.
+- Use o Maven Wrapper para builds reprodutíveis.
+- Mantenha scripts de criação/população do banco em `src/main/resources/scripts`.
 
-- Use o Maven Wrapper para garantir que todos usem a mesma versão do Maven.
-- Nunca comite credenciais reais no repositório; prefira variáveis de ambiente ou arquivos de configuração ignorados.
-- Mantenha os scripts SQL em `src/main/resources/scripts` sob versionamento para reprodução do ambiente.
-
-## Como contribuir
-
-1. Fork do repositório.
-2. Crie uma branch com a sua feature: `git checkout -b feature/nome-da-feature`.
-3. Faça commits pequenos e com mensagens descritivas.
-4. Abra um Pull Request descrevendo a mudança.
-
-## Contato
-
-Para dúvidas ou sugestões, abra uma issue no repositório ou envie um e-mail ao mantenedor do projeto.
-
-## Licença
+## Contato e licença
 
 Este projeto pode ser usado para estudos e demonstrações. Adicione uma licença formal ao repositório conforme sua necessidade (por exemplo, MIT, Apache-2.0, etc.).
-
