@@ -1,6 +1,6 @@
 # Gerenciar Pedido
 
-README completo do projeto "gerenciar-pedido" — aplicação backend de exemplo construída com Java e Spring Boot para gerenciar usuários e produtos, com autenticação JWT, controle por roles e tratamento centralizado de erros.
+README aplicação backend de exemplo construída com Java e Spring Boot para gerenciar usuários e produtos, com autenticação JWT, controle por roles e tratamento centralizado de erros.
 
 ## Visão geral
 
